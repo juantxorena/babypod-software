@@ -357,6 +357,7 @@ Please contribute and submit pull requests if you can help!
 - The Adafruit ESP32-S3 Feathers don't allow CircuitPython to read the `VBUS` pin to know if the battery is charging, so the battery monitor reports an indeterminate `None` status instead of `True` or `False`. On such Feathers, the BabyPod will nag you to turn it off even if it's plugged in and charging. A partial workaround is checking for a USB *data* connection, and if one exists, assuming the battery is charging. Some other Feathers do support reading this pin, notably the Unexpected Maker ESP32-S3 Feather.
 - Presumably, the code doesn't know if the battery health is degrading or knowing when it's degraded enough to need replacement. Perhaps there's a way of tracking charging cycles and guessing, even if the battery monitor chip can't tell?
 - Baby Buddy should be set to your local timezone, not UTC, and if you're travelling across time zones, the data could be confusing. This is particularly important when working offline.
+- MySQL-backed Baby Buddy instances might fail on some `POST` payloads that contain UTF-8 extended characters (emoji, etc.), even when the underlying tables are `utf8mb4` as they should be by default. I'm not sure why; the workaround is to avoid such characters like in the BabyPod's name. The actual fix is to be sure the endpoint accepts such characters.
 
 ## Wishlist
 
