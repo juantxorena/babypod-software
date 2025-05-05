@@ -370,13 +370,13 @@ class APIRequest:
 		if extra_notes is None:
 			extra_notes = []
 
-		if timer is not None:
-			battery_notes = APIRequest.battery_delta_as_notes(timer)
-			if battery_notes is not None:
-				extra_notes.append(battery_notes)
+		#if timer is not None:
+		#	battery_notes = APIRequest.battery_delta_as_notes(timer)
+		#	if battery_notes is not None:
+		#		extra_notes.append(battery_notes)
 
 		if len(extra_notes) > 0:
-			notes += "\n" + "\n".join(extra_notes)
+			notes += "; " + "; ".join(extra_notes)
 
 		payload.update({"notes": notes})
 
