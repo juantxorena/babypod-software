@@ -43,9 +43,6 @@ class ExternalRTC:
         :param requests: Session to use for sending the HTTP request to adafruit.io
         """
 
-        if not self.offline_state:
-            raise RuntimeError("Must set offline_state before syncing")
-
         print("Updating RTC...", end = "")
 
         username = os.getenv("ADAFRUIT_AIO_USERNAME")
@@ -56,11 +53,14 @@ class ExternalRTC:
 
         response = requests.get(f"https://io.adafruit.com/api/v2/{username}/integrations/time/clock?x-aio-key={api_key}")
         now = Util.to_datetime(response.text)
-        self.offline_state.rtc_utc_offset = (now.utcoffset().seconds / 60 / 60) - 24
-        while self.offline_state.rtc_utc_offset >= 24:
-            self.offline_state.rtc_utc_offset -= 24
-        while self.offline_state.rtc_utc_offset <= -24:
-            self.offline_state.rtc_utc_offset += 24
+        utc_offset = (now.utcoffset().seconds / 60 / 60) - 24
+        while utc_offset >= 24:
+            utc_offset -= 24
+        while utc_offset <= -24:
+            utc_offset += 24
+
+        if self.offline_state is not None:
+            self.offline_state.rtc_utc_offset = utc_offset
 
         self.device.datetime = struct_time((
             now.year,
@@ -74,10 +74,11 @@ class ExternalRTC:
             -1
         ))
 
-        self.offline_state.last_rtc_set = now
-        self.offline_state.to_sdcard()
+        if self.offline_state is not None:
+            self.offline_state.last_rtc_set = now
+            self.offline_state.to_sdcard()
 
-        print(f"set to {self.device.datetime}, UTC offset {self.offline_state.rtc_utc_offset}")
+        print(f"set to {self.device.datetime}, UTC offset {utc_offset}")
 
     def now(self) -> Optional[datetime]:
         """
@@ -86,15 +87,12 @@ class ExternalRTC:
         :return: Current date/time or None if not available
         """
 
-        if not self.offline_state:
-            raise RuntimeError("Must set offline_state before getting time")
-
         now = self.device.datetime
         if now.tm_year < 2024 or now.tm_year > 2050:
             print(f"RTC date/time is implausible because year is {now.tm_year}")
             return None
 
-        if self.offline_state.rtc_utc_offset is None:
+        if self.offline_state is None or self.offline_state.rtc_utc_offset is None:
             print("UTC offset not stored in offline set; RTC must be set")
             return None
 

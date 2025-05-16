@@ -325,13 +325,16 @@ class Flow:
 
 		if self.devices.rtc and not NVRAMValues.OFFLINE:
 			now = self.devices.rtc.now()
-			last_checked = self.offline_state.last_motd_check
+			if self.offline_state is not None:
+				last_checked = self.offline_state.last_motd_check
 
-			if last_checked is not None:
-				delta = now - last_checked
-				# noinspection PyUnresolvedReferences
-				delta_seconds = delta.seconds + (delta.days * 60 * 60 * 24)
-				motd_check_required = delta_seconds >= int(NVRAMValues.MOTD_CHECK_INTERVAL)
+				if last_checked is not None:
+					delta = now - last_checked
+					# noinspection PyUnresolvedReferences
+					delta_seconds = delta.seconds + (delta.days * 60 * 60 * 24)
+					motd_check_required = delta_seconds >= int(NVRAMValues.MOTD_CHECK_INTERVAL)
+				else:
+					motd_check_required = True
 			else:
 				motd_check_required = True
 
@@ -347,8 +350,9 @@ class Flow:
 							piezo_tone = "motd"
 						).render().wait()
 
-					self.offline_state.last_motd_check = now
-					self.offline_state.to_sdcard()
+					if self.offline_state is not None:
+						self.offline_state.last_motd_check = now
+						self.offline_state.to_sdcard()
 				except Exception as e:
 					import traceback
 					traceback.print_exception(e)
