@@ -191,8 +191,17 @@ else:
 if zip_file is not None:
     print("Adding setting.toml.example to zip...", end = "", flush = True)
     zip_file.write("settings.toml.example", "settings.toml.example")
-    zip_file.close()
     print("done")
+
+    print("Adding lib/ to zip...", end = "", flush = True)
+    for subdir, dirs, files in os.walk(get_base_path() + "/lib"):
+        for file in files:
+            if not file.startswith("."):
+                relative_path = pathlib.Path(subdir, file).relative_to(get_base_path())
+                zip_file.write(filename = os.path.join(subdir, file), arcname = relative_path)
+    print("done")
+
+    zip_file.close()
 
 if not args.no_reboot:
     print("Rebooting")
