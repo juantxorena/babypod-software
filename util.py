@@ -3,6 +3,7 @@ Static utility methods.
 """
 
 import time
+import os
 
 import adafruit_datetime
 import traceback
@@ -65,17 +66,19 @@ class Util:
 		"""
 		hour = datetime_obj.hour
 		minute = datetime_obj.minute
-		meridian = "a"
-
-		if hour == 0:
-			hour = 12
-		elif hour == 12:
-			meridian = "p"
-		elif hour > 12:
-			hour -= 12
-			meridian = "p"
-
-		return f"{hour}:{minute:02}{meridian}"
+		time_24h = bool(os.getenv("TIME_24H"))
+		if time_24h:
+			return f"{hour:02}:{minute:02}"
+		else:
+			meridian = "a"
+			if hour == 0:
+				hour = 12
+			elif hour == 12:
+				meridian = "p"
+			elif hour > 12:
+				hour -= 12
+				meridian = "p"
+			return f"{hour}:{minute:02}{meridian}"
 
 	@staticmethod
 	def format_battery_percent(percent: int) -> str:
