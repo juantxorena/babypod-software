@@ -866,12 +866,13 @@ class Flow:
 			if not timer:
 				return
 
+			volume_unit = os.getenv("VOLUME_UNIT") or "ml"
 			amount = NumericSelector(
 				header = "How much?",
 				devices = self.devices,
 				minimum = 0,
 				step = 0.5,
-				format_str = "%.1f fl oz"
+				format_str = "%.1f " + volume_unit
 			).render().wait()
 
 			if amount is not None:
