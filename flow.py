@@ -867,11 +867,12 @@ class Flow:
 				return
 
 			volume_unit = os.getenv("VOLUME_UNIT") or "ml"
+			volume_step = os.getenv("VOLUME_STEP") or 1
 			amount = NumericSelector(
 				header = "How much?",
 				devices = self.devices,
 				minimum = 0,
-				step = 0.5,
+				step = volume_step,
 				format_str = "%.1f " + volume_unit
 			).render().wait()
 

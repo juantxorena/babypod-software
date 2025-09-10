@@ -53,3 +53,4 @@ DEVICE_NAME="" # defaults to "BabyPod"
 # Configuration
 TIME_24H=1
 VOLUME_UNIT="ml"
+VOLUME_STEP=1
