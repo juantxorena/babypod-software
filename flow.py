@@ -775,7 +775,7 @@ class Flow:
 					method = available_method["method"]
 					break
 
-			amount = None
+			amount = 0
 			if method == "bottle":
 				amount = NumericSelector(
 					header = "How much?",
